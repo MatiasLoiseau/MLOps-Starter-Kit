@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+mlflow_data/1
+dbs/data
+datasets
+
 # Distribution / packaging
 .Python
 build/

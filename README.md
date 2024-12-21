@@ -131,6 +131,10 @@ newgrp docker
 docker run hello-world
 ```
 
+### 3. Open Airbyte
+
+Check with `docker ps -a` if airbyte is running, then open your browser and navigate to: [http://localhost:8000/](http://localhost:8000/)
+
 ---
 
 ## Optional Tools

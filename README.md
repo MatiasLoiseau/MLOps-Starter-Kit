@@ -135,6 +135,44 @@ docker run hello-world
 
 Check with `docker ps -a` if airbyte is running, then open your browser and navigate to: [http://localhost:8000/](http://localhost:8000/)
 
+### 4. Add sources
+
+Agregar los 3 sources:
+
+https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv
+
+https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv
+
+https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv
+
+
+### 5. Destination creation
+
+Entrar al docker con 
+
+```bash
+docker exec -it mlops-postgres /bin/bash
+    psql -U postgres
+```
+o
+
+```bash
+psql -U postgres -h localhost -p 5432
+```
+
+Y luego darle permisos al usuario de airbyte
+
+```sql
+CREATE DATABASE mlops;
+CREATE USER "yourmail@gmail.com" WITH ENCRYPTED PASSWORD 'airbyte';
+GRANT ALL PRIVILEGES ON DATABASE mlops TO "yourmail@gmail.com";
+GRANT ALL ON SCHEMA public TO "yourmail@gmail.com";
+GRANT USAGE ON SCHEMA public TO "yourmail@gmail.com";
+ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
+
+\du  
+```
+
 ---
 
 ## Optional Tools

@@ -10,6 +10,10 @@ mlflow_data/1
 dbs/data
 datasets
 
+db_postgres/target/
+db_postgres/dbt_packages/
+db_postgres/logs/
+
 # Distribution / packaging
 .Python
 build/

@@ -172,6 +172,30 @@ ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
 
 \du  
 ```
+---
+
+## DBT
+
+### 1. Install and create template 
+
+```bash
+pip install dbt-postgres
+dbt init db_postgres
+```
+
+Configure like that:
+
+```bash
+Enter a number: 1
+host (hostname for the instance): localhost
+port [5432]: 
+user (dev username): yourmail@gmail.com
+pass (dev password): 
+dbname (default database that dbt will build objects in): mlops
+schema (default schema that dbt will build objects in): target
+threads (1 or more) [1]: 
+```
+
 
 ---
 

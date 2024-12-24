@@ -1,18 +1,12 @@
 # MLOps Starter Kit
 
-This repository contains a practical project developed as part of the MLOps certification program at ITBA. It provides a basic yet functional implementation of an MLOps architecture designed to automate the complete workflow of a machine learning project, from data management to model deployment.
-
-## Features
-- Environment setup with    conda and pip
-- PostgreSQL database setup using Docker
-- MLFlow server configuration for tracking machine learning experiments
-- Integration with Airbyte for data management
+This repository contains a practical project developed as part of the MLOps certification program at ITBA. It demonstrates a basic yet functional implementation of an MLOps architecture, automating the entire machine learning workflow, from data management to model deployment.
 
 ---
 
-## Install basic components
+## Installation Guide
 
-### 1. Create a Conda Environment
+### 1. Create the Conda Environment
 
 ```bash
 conda create -n mlops-env python=3.12
@@ -22,19 +16,14 @@ conda install -c conda-forge psycopg2
 ```
 
 ### 2. Set Environment Variables
+
 From the repository's root folder:
 
 ```bash
-# Export the repository folder as an environment variable
 export REPO_FOLDER=${PWD}
-
-# Load variables from the .env file
 set -o allexport && source .env && set +o allexport
-
-# Verify the environment variable
 echo $postgres_data_folder
 ```
-
 ---
 
 ## Setting Up PostgreSQL
@@ -59,23 +48,22 @@ docker run -d \
 
 ### 3. Verify and Manage the Container
 
+Common Docker commands:
+
 ```bash
-# List running containers
 docker ps
-# List all containers (including stopped ones)
 docker ps -a
-# Access the container's shell
 docker exec -it mlops-postgres /bin/bash
-# Access PostgreSQL from the container's shell
+```
+Access PostgreSQL inside the container:
+
+```bash
 psql -U postgres
-# Exit PostgreSQL
 postgres=# \q
-# Exit the container's shell
-root@container-id$ exit
+exit
 ```
 
 ### 4. Install PostgreSQL Client (Optional)
-For easier access to the database:
 
 ```bash
 sudo apt install postgresql-client-16
@@ -84,19 +72,19 @@ psql -U postgres -h localhost -p 5432
 ```
 
 ### 5. Create the MLFlow Database
-Access the PostgreSQL client and run the following SQL commands:
+
+Run these SQL commands to set up the database:
 
 ```sql
 CREATE DATABASE mlflow_db;
 CREATE USER mlflow_user WITH ENCRYPTED PASSWORD 'mlflow';
 GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO mlflow_user;
 ```
-
 ---
 
 ## Running the MLFlow Server
 
-### 1. Activate the Conda environment and set environment variables:
+### 1. Activate Conda and Set Environment Variables
 
 ```bash
 conda activate mlops-env
@@ -104,117 +92,95 @@ export REPO_FOLDER=${PWD}
 set -o allexport && source .env && set +o allexport
 ```
 
-### 2. Start the MLFlow server:
+### 2. Start the MLFlow Server
 
 ```bash
-mlflow server --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB --default-artifact-root $MLFLOW_ARTIFACTS_PATH -h 0.0.0.0 -p 8002
+mlflow server \
+    --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB \
+    --default-artifact-root $MLFLOW_ARTIFACTS_PATH \
+    -h 0.0.0.0 \
+    -p 8002
 ```
 
-### 3. Open MLFlow
+### 3. Access MLFlow
 
 Open your browser and navigate to: [http://localhost:8002/](http://localhost:8002/)
 
 ---
 
-## Installing Airbyte on Linux
+## Installing Airbyte
 
-### 1. Follow the Official Instructions
-Refer to the official Airbyte documentation for a quickstart guide: [Airbyte Quickstart Guide](https://docs.airbyte.com/using-airbyte/getting-started/oss-quickstart)
+### 1. Install Airbyte
 
-### 2. Troubleshooting on Ubuntu
-Airbyte uses Docker and requires non-sudo access:
+Follow the [Airbyte Quickstart Guide](https://docs.airbyte.com/using-airbyte/getting-started/oss-quickstart).
+
+### 2. Grant Non-Sudo Access to Docker
 
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
-# Test the Docker installation
 docker run hello-world
 ```
 
-### 3. Open Airbyte
+### 3. Start Airbyte and Add Sources
 
-Check with `docker ps -a` if airbyte is running, then open your browser and navigate to: [http://localhost:8000/](http://localhost:8000/)
+Start Airbyte and navigate to [http://localhost:8000/](http://localhost:8000/). Add the following sources:
 
-### 4. Add sources
+- `https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv`
+- `https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv`
+- `https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv`
 
-Agregar los 3 sources:
+### 4. Set Up the Destination
 
-https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv
-
-https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv
-
-https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv
-
-
-### 5. Destination creation
-
-Entrar al docker con 
-
-```bash
-docker exec -it mlops-postgres /bin/bash
-    psql -U postgres
-```
-o
-
-```bash
-psql -U postgres -h localhost -p 5432
-```
-
-Y luego darle permisos al usuario de airbyte
+Grant permissions to the Airbyte user:
 
 ```sql
 CREATE DATABASE mlops;
 CREATE USER "yourmail@gmail.com" WITH ENCRYPTED PASSWORD 'airbyte';
 GRANT ALL PRIVILEGES ON DATABASE mlops TO "yourmail@gmail.com";
 GRANT ALL ON SCHEMA public TO "yourmail@gmail.com";
-GRANT USAGE ON SCHEMA public TO "yourmail@gmail.com";
 ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
-
-\du  
 ```
 ---
 
-## DBT
+## Setting Up DBT
 
-### 1. Install and create template 
+### 1. Install DBT and Initialize the Project
 
 ```bash
 pip install dbt-postgres
 dbt init db_postgres
 ```
 
-Configure like that:
+### 2. Configure DBT
 
-```bash
-Enter a number: 1
-host (hostname for the instance): localhost
-port [5432]: 
-user (dev username): yourmail@gmail.com
-pass (dev password): 
-dbname (default database that dbt will build objects in): mlops
-schema (default schema that dbt will build objects in): target
-threads (1 or more) [1]: 
-```
+Follow the prompts during initialization:
 
-### 2. Create models and run
+- Host: `localhost`
+- Port: `5432`
+- User: `yourmail@gmail.com`
+- Database: `mlops`
+- Schema: `target`
 
-1. Create SQL transformations in db_postgres/models
-2. Create schema.yml
-3. Configure db_project.yml
-4. Test DBT with `dbt debug` and then run with `dbt run`
-5. Check new schema and tables on postgres
+### 3. Create and Run Models
+
+1. Add SQL transformations in `db_postgres/models`.
+2. Create a `schema.yml` file.
+3. Configure `dbt_project.yml`.
+4. Test DBT with `dbt debug`, then execute with `dbt run`.
+
+Go to [this commit](https://github.com/MatiasLoiseau/MLOps-Started-Kit/commit/3b67c813e1c631899660e92711cd78815c2903ef) to configure steps 1 to 3.
 
 ---
 
 ## Optional Tools
 
-### Install DBeaver (Optional)
-DBeaver is a database management tool that can be used to visualize and manage PostgreSQL databases.
+### DBeaver Installation (Optional)
 
-#### Installation via Flatpak:
+Install DBeaver for database visualization:
 
 ```bash
 flatpak install flathub io.dbeaver.DBeaverCommunity
-```
+```     
 
 ---

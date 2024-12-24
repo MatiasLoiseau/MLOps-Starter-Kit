@@ -196,6 +196,13 @@ schema (default schema that dbt will build objects in): target
 threads (1 or more) [1]: 
 ```
 
+### 2. Create models and run
+
+1. Create SQL transformations in db_postgres/models
+2. Create schema.yml
+3. Configure db_project.yml
+4. Test DBT with `dbt debug` and then run with `dbt run`
+5. Check new schema and tables on postgres
 
 ---
 

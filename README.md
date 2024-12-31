@@ -173,6 +173,19 @@ Go to [this commit](https://github.com/MatiasLoiseau/MLOps-Started-Kit/commit/3b
 
 ---
 
+## Dagster
+
+### 1. Install Dagster
+
+```bash
+conda install dagster
+dagster project scaffold --name recommender_system
+cd recommender_system
+pip install -e ".[dev]"
+```
+
+---
+
 ## Optional Tools
 
 ### DBeaver Installation (Optional)

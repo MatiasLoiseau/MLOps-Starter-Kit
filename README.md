@@ -182,6 +182,9 @@ conda install dagster
 dagster project scaffold --name recommender_system
 cd recommender_system
 pip install -e ".[dev]"
+dagster dev
+mkdir -p dagster_home
+export DAGSTER_HOME="$(pwd)/dagster_home"        
 ```
 
 ---

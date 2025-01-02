@@ -94,6 +94,8 @@ set -o allexport && source .env && set +o allexport
 
 ### 2. Start the MLFlow Server
 
+**Note:** The postgres server must be ON.
+
 ```bash
 mlflow server \
     --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB \

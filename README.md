@@ -194,12 +194,13 @@ dagster dev
 
 ## Optional Tools
 
-### DBeaver Installation (Optional)
+### DBeaver Installation Linux (Optional)
 
 Install DBeaver for database visualization:
 
 ```bash
 flatpak install flathub io.dbeaver.DBeaverCommunity
 ```     
+Then you can configure DBeaver to query the databases made in postgresql
 
 ---

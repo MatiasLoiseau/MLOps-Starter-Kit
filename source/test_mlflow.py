@@ -1,5 +1,5 @@
 # %%
-%env MLFLOW_TRACKING_URI=http://localhost:8000
+%env MLFLOW_TRACKING_URI=http://localhost:8002
 # %%
 import mlflow
 import os

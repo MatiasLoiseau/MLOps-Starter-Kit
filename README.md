@@ -4,6 +4,45 @@ This repository contains a practical project developed as part of the MLOps cert
 
 ---
 
+## Start Up
+
+**Notes:**
+1. Follow these steps only if all required tools are already installed.
+2. Clone and navigate to this repository before proceeding.
+3. Airbyte is configured to start automatically when the PC is turned on.
+
+### Start Postgres and MLFlow
+
+```bash
+conda activate mlops-env
+export REPO_FOLDER=${PWD}
+set -o allexport && source .env && set +o allexport
+echo $postgres_data_folder
+docker start mlops-postgres
+mlflow server \
+    --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB \
+    --default-artifact-root $MLFLOW_ARTIFACTS_PATH \
+    -h 0.0.0.0 \
+    -p 8002
+```
+
+### Start Dagster
+
+```bash
+cd recommender_system
+export DAGSTER_HOME="$(pwd)/dagster_home"
+export MLFLOW_TRACKING_URI=http://localhost:8002
+dagster dev
+```
+
+### Default Links
+
+- **Airbyte:** [http://localhost:8000](http://localhost:8000)
+- **MLFlow:** [http://localhost:8002](http://localhost:8002)
+- **Dagster:** [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+---
+
 ## Installation Guide
 
 ### 1. Create the Conda Environment
@@ -169,7 +208,8 @@ Follow the prompts during initialization:
 1. Add SQL transformations in `db_postgres/models`.
 2. Create a `schema.yml` file.
 3. Configure `dbt_project.yml`.
-4. Test DBT with `dbt debug`, then execute with `dbt run`.
+4. cd `db_postgres`
+5. Test DBT with `dbt debug`, then execute with `dbt run`.
 
 Go to [this commit](https://github.com/MatiasLoiseau/MLOps-Started-Kit/commit/3b67c813e1c631899660e92711cd78815c2903ef) to configure steps 1 to 3.
 

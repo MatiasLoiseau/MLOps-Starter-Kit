@@ -10,7 +10,17 @@ data_ops_config = {
     'movies': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv'
-            }
+        }
+    },
+    'users': {
+        'config': {
+            'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
+        }
+    },
+    'scores': {
+        'config': {
+            'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
+        }
     }
 }
 

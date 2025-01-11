@@ -1,5 +1,6 @@
 from dagster import asset, Output, String, AssetIn, FreshnessPolicy, MetadataValue
 from dagster_mlflow import mlflow_tracking
+from recommender_system.configs import data_ops_config
 import pandas as pd
 
 movies_categories_columns = [
@@ -12,14 +13,11 @@ movies_categories_columns = [
 
 @asset(
     freshness_policy=FreshnessPolicy(maximum_lag_minutes=5),
-    # group_name='csv_data',
     code_version="2",
-    config_schema={
-        'uri': String
-    },
+    config_schema={'uri': String},
 )
 def movies(context) -> Output[pd.DataFrame]:
-    uri = context.op_config["uri"]
+    uri = data_ops_config['movies']['config']['uri']
     result = pd.read_csv(uri)
     return Output(
         result,
@@ -31,40 +29,26 @@ def movies(context) -> Output[pd.DataFrame]:
     )
 
 
-@asset(
-    # group_name='csv_data',
-    # io_manager_key="parquet_io_manager",
-    # partitions_def=hourly_partitions,
-    # key_prefix=["s3", "core"],
-    # config_schema={
-    #     'uri': String
-    # }
-)
+@asset
 def users() -> Output[pd.DataFrame]:
-    uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
+    uri = data_ops_config['users']['config']['uri']
     result = pd.read_csv(uri)
     return Output(
         result,
         metadata={
             "Total rows": len(result),
-            **result.groupby('Occupation').count()['id'].to_dict()
+            **result.groupby('Occupation').count()['id'].to_dict(),
         },
     )
 
 
 @asset(
     resource_defs={'mlflow': mlflow_tracking}
-    # io_manager_key="parquet_io_manager",
-    # partitions_def=hourly_partitions,
-    # key_prefix=["s3", "core"],
-    # config_schema={
-    #     'uri': String
-    # }
-)
+    )
 def scores(context) -> Output[pd.DataFrame]:
-    mlflow = context.resources.mlflow
-    uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
+    uri = data_ops_config['scores']['config']['uri']
     result = pd.read_csv(uri)
+    mlflow = context.resources.mlflow
     metrics = {
         "Total rows": len(result),
         "scores_mean": float(result['rating'].mean()),
@@ -73,11 +57,7 @@ def scores(context) -> Output[pd.DataFrame]:
         "unique_users": len(result['user_id'].unique())
     }
     mlflow.log_metrics(metrics)
-
-    return Output(
-        result,
-        metadata=metrics,
-    )
+    return Output(result, metadata=metrics)
 
 @asset(ins={
     "scores": AssetIn(

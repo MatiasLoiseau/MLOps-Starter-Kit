@@ -16,8 +16,8 @@ movies_categories_columns = [
     code_version="2",
     config_schema={'uri': String},
 )
-def movies(context) -> Output[pd.DataFrame]:
-    uri = data_ops_config['movies']['config']['uri']
+def core_movies(context) -> Output[pd.DataFrame]:
+    uri = data_ops_config['core_movies']['config']['uri']
     result = pd.read_csv(uri)
     return Output(
         result,
@@ -61,10 +61,10 @@ def scores(context) -> Output[pd.DataFrame]:
 
 @asset(ins={
     "scores": AssetIn(
-        # key_prefix=["snowflake", "core"],
+        # key_prefix=["snowflake", "co  re"],
         # metadata={"columns": ["id"]}
     ),
-    "movies": AssetIn(
+    "core_movies": AssetIn(
         # key_prefix=["snowflake", "core"],
         # metadata={"columns": ["id"]}
     ),
@@ -73,9 +73,9 @@ def scores(context) -> Output[pd.DataFrame]:
         # metadata={"columns": ["id", "user_id", "parent"]}
     ),
 })
-def training_data(users: pd.DataFrame, movies: pd.DataFrame, scores: pd.DataFrame) -> Output[pd.DataFrame]:
+def training_data(users: pd.DataFrame, core_movies: pd.DataFrame, scores: pd.DataFrame) -> Output[pd.DataFrame]:
     scores_users = pd.merge(scores, users, left_on='user_id', right_on='id')
-    all_joined = pd.merge(scores_users, movies, left_on='movie_id', right_on='id')
+    all_joined = pd.merge(scores_users, core_movies, left_on='movie_id', right_on='id')
 
     return Output(
         all_joined,

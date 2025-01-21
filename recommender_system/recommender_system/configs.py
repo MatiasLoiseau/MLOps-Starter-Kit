@@ -7,7 +7,7 @@ mlflow_resources = {
 }
 
 data_ops_config = {
-    'movies': {
+    'core_movies': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv'
         }

@@ -17,6 +17,7 @@ db_postgres/logs/
 # Dagster history and storage
 recommender_system/dagster_home/history/
 recommender_system/dagster_home/storage/
+recommender_system/dagster_home/.nux/
 
 # Distribution / packaging
 .Python

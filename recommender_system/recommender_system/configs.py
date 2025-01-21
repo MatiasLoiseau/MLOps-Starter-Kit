@@ -12,12 +12,12 @@ data_ops_config = {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv'
         }
     },
-    'users': {
+    'core_users': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
         }
     },
-    'scores': {
+    'core_scores': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
         }

@@ -26,7 +26,7 @@ all_assets = [*core_assets, *recommender_assets, *airbyte_assets]
 
 data_job = define_asset_job(
     name='get_data',
-    selection=['core_movies', 'users', 'scores', 'training_data'],
+    selection=['core_movies', 'core_users', 'core_scores', 'training_data'],
     config=job_data_config
 )
 

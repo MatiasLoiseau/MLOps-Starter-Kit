@@ -30,8 +30,8 @@ def core_movies(context) -> Output[pd.DataFrame]:
 
 
 @asset
-def users() -> Output[pd.DataFrame]:
-    uri = data_ops_config['users']['config']['uri']
+def core_users() -> Output[pd.DataFrame]:
+    uri = data_ops_config['core_users']['config']['uri']
     result = pd.read_csv(uri)
     return Output(
         result,
@@ -45,8 +45,8 @@ def users() -> Output[pd.DataFrame]:
 @asset(
     resource_defs={'mlflow': mlflow_tracking}
     )
-def scores(context) -> Output[pd.DataFrame]:
-    uri = data_ops_config['scores']['config']['uri']
+def core_scores(context) -> Output[pd.DataFrame]:
+    uri = data_ops_config['core_scores']['config']['uri']
     result = pd.read_csv(uri)
     mlflow = context.resources.mlflow
     metrics = {
@@ -60,21 +60,21 @@ def scores(context) -> Output[pd.DataFrame]:
     return Output(result, metadata=metrics)
 
 @asset(ins={
-    "scores": AssetIn(
-        # key_prefix=["snowflake", "co  re"],
+    "core_scores": AssetIn(
+        # key_prefix=["snowflake", "core"],
         # metadata={"columns": ["id"]}
     ),
     "core_movies": AssetIn(
         # key_prefix=["snowflake", "core"],
         # metadata={"columns": ["id"]}
     ),
-    "users": AssetIn(
+    "core_users": AssetIn(
         # key_prefix=["snowflake", "core"],
         # metadata={"columns": ["id", "user_id", "parent"]}
     ),
 })
-def training_data(users: pd.DataFrame, core_movies: pd.DataFrame, scores: pd.DataFrame) -> Output[pd.DataFrame]:
-    scores_users = pd.merge(scores, users, left_on='user_id', right_on='id')
+def training_data(core_users: pd.DataFrame, core_movies: pd.DataFrame, core_scores: pd.DataFrame) -> Output[pd.DataFrame]:
+    scores_users = pd.merge(core_scores, core_users, left_on='user_id', right_on='id')
     all_joined = pd.merge(scores_users, core_movies, left_on='movie_id', right_on='id')
 
     return Output(

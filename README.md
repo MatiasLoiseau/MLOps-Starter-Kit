@@ -230,15 +230,17 @@ export MLFLOW_TRACKING_URI=http://localhost:8002
 dagster dev
 ```
     
-## Dagster and Airbyte integration
+## Dagster, Airbyte and DBT integration
 
-pip install dagster dagster-airbyte
-
-dagster project scaffold --name airbyte-dbt-mlflow
-
-### Crear postgres database
-CREATE DATABASE destination;
-GRANT ALL PRIVILEGES ON DATABASE destination TO postgres;
+```bash
+conda create -n mlops-dagster python=3.9
+pip install dagster dagster-airbyte dbt-postgres dagster-mlflow tensorflow # do not use conda install
+cd recommender_system
+pip install -e ".[dev]"
+export DAGSTER_HOME="$(pwd)/dagster_home"
+export MLFLOW_TRACKING_URI=http://localhost:8002
+dagster dev
+```
 
 ---
 

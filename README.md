@@ -234,7 +234,7 @@ dagster dev
 
 ```bash
 conda create -n mlops-dagster python=3.9
-pip install dagster dagster-airbyte dbt-postgres dagster-mlflow tensorflow # do not use conda install
+pip install dagster dagster-airbyte dbt-postgres dagster-mlflow dagster-dbt tensorflow # do not use conda install
 cd recommender_system
 pip install -e ".[dev]"
 export DAGSTER_HOME="$(pwd)/dagster_home"

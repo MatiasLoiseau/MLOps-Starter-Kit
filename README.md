@@ -244,6 +244,46 @@ dagster dev
 
 ---
 
+## Postgres complete commands list
+
+### Prerequisites
+- Docker installed on your system.
+- Environment variables setted
+
+### (optional) Delete previous postgres
+
+If you are reinstalling postgres, make sure to erase the previous data:
+
+```bash
+docker stop mlops-postgres
+docker rm mlops-postgres
+rm -rf $postgres_data_folder
+```
+
+### Commands
+```bash
+docker pull postgres
+docker run -d \
+    --name mlops-postgres \
+    -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+    -e PGDATA=/var/lib/postgresql/data/pgdata \
+    -v $postgres_data_folder:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres
+docker exec -it mlops-postgres /bin/bash
+psql -U postgres
+CREATE DATABASE mlflow_db;
+CREATE USER mlflow_user WITH ENCRYPTED PASSWORD 'mlflow';
+GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO mlflow_user;
+CREATE DATABASE mlops;
+CREATE USER "yourmail@gmail.com" WITH ENCRYPTED PASSWORD 'airbyte';
+GRANT ALL PRIVILEGES ON DATABASE mlops TO "yourmail@gmail.com";
+GRANT ALL ON SCHEMA public TO "yourmail@gmail.com";
+ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
+```
+
+---
+
 ## Optional Tools
 
 ### DBeaver Installation Linux (Optional)

@@ -52,3 +52,23 @@ job_training_config = {
         **training_config
     }
 }
+
+training_config_20 = {
+    'model_trained': {
+        'config': {
+            'batch_size': 256,
+            'epochs': 20,
+            'learning_rate': 1e-3,
+            'embeddings_dim': 5
+        }
+    }
+}
+
+job_training_config_20 = {
+    'resources': {
+        **mlflow_resources
+    },
+    'ops': {
+        **training_config_20
+    }
+}

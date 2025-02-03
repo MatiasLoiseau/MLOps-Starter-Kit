@@ -4,7 +4,7 @@ import dagster as dg
 from dagster_dbt import dbt_assets, DbtCliResource, DbtProject
 from dagster import Definitions, define_asset_job, AssetSelection, with_resources, EnvVar
 from recommender_system.assets import core_assets, recommender_assets
-from recommender_system.configs import job_data_config, job_training_config
+from recommender_system.configs import job_data_config, job_training_config, job_training_config_20
 from dagster_airbyte import AirbyteResource, build_airbyte_assets
 
 # Define the Airbyte instance
@@ -63,7 +63,7 @@ dbt_project.prepare_if_dev()
 def dbt_models(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
 
-all_assets = [*all_airbyte_assets, dbt_models]  
+all_assets = [*all_airbyte_assets, dbt_models, *recommender_assets] 
 
 """
 data_job = define_asset_job(
@@ -71,13 +71,13 @@ data_job = define_asset_job(
     selection=['core_movies', 'core_users', 'core_scores', 'training_data'],
     config=job_data_config
 )
+"""
 
 only_training_job = define_asset_job(
     "only_training",
     selection=AssetSelection.groups('recommender'),
-    config=job_training_config
+    config=job_training_config_20
 )
-"""
 
 airbyte_sync_job = define_asset_job(
     name="airbyte_sync_job",
@@ -93,7 +93,7 @@ defs = Definitions(
     assets=all_assets,  
     jobs=[
         #data_job,
-        #only_training_job,
+        only_training_job,
         airbyte_sync_job,
         dbt_job
     ],

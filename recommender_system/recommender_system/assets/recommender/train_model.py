@@ -1,7 +1,43 @@
-from dagster import asset, AssetIn, Int, Float, multi_asset, AssetOut
+import os
+from dagster import asset, AssetIn, Int, Float, multi_asset, AssetOut, Output, EnvVar
 import pandas as pd
 from dagster_mlflow import mlflow_tracking
 from sklearn.model_selection import train_test_split
+from sqlalchemy import create_engine
+
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST", "localhost"),
+    "database": os.getenv("DB_NAME", "mlops"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "schema": os.getenv("DB_SCHEMA", "public")
+}
+
+def get_postgres_connection():
+    return create_engine(
+        f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}"
+    )
+
+@asset()
+def training_data() -> Output[pd.DataFrame]:
+    engine = get_postgres_connection()
+    
+    # Cargar las tablas desde PostgreSQL
+    users_df = pd.read_sql("SELECT * FROM target.users", engine)
+    movies_df = pd.read_sql("SELECT * FROM target.movies", engine)
+    scores_df = pd.read_sql("SELECT * FROM target.scores", engine)
+
+    # Cambiamos la unión de los datos   
+    scores_users = pd.merge(scores_df, users_df, on='user_id')
+    all_joined = pd.merge(scores_users, movies_df, on='movie_id')
+
+    return Output(
+        all_joined, 
+        metadata={
+            "Total rows": len(all_joined)
+        },
+    )
+
 
 @multi_asset(
     ins={

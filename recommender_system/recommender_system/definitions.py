@@ -7,7 +7,7 @@ from recommender_system.assets import recommender_assets
 from recommender_system.configs import job_training_config, job_training_config_20
 from dagster_airbyte import AirbyteResource, build_airbyte_assets
 
-# Define the Airbyte instance
+# Define the Airbyte instance   
 airbyte_instance = AirbyteResource(
     host="localhost",
     port="8000",
@@ -68,7 +68,7 @@ all_assets = [*all_airbyte_assets, dbt_models, *recommender_assets]
 only_training_job = define_asset_job(
     "only_training",
     selection=AssetSelection.groups('recommender'),
-    config=job_training_config_20
+    config=job_training_config
 )
 
 airbyte_sync_job = define_asset_job(

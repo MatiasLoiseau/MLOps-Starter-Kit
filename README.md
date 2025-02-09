@@ -4,50 +4,13 @@ This repository contains a practical project developed as part of the MLOps cert
 
 ---
 
-## Start Up
-
-**Notes:**
-1. Follow these steps only if all required tools are already installed.
-2. Clone and navigate to this repository before proceeding.
-3. Airbyte is configured to start automatically when the PC is turned on.
-
-### Start Postgres and MLFlow
-
-```bash
-conda activate mlops-env
-export REPO_FOLDER=${PWD}
-set -o allexport && source .env && set +o allexport
-echo $postgres_data_folder
-docker start mlops-postgres
-mlflow server \
-    --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB \
-    --default-artifact-root $MLFLOW_ARTIFACTS_PATH \
-    -h 0.0.0.0 \
-    -p 8002
-```
-
-### Start Dagster
-
-```bash
-cd recommender_system
-export DAGSTER_HOME="$(pwd)/dagster_home"
-export MLFLOW_TRACKING_URI=http://localhost:8002
-dagster dev
-```
-
-### Default Links
-
-- **Airbyte:** [http://localhost:8000](http://localhost:8000)
-- **MLFlow:** [http://localhost:8002](http://localhost:8002)
-- **Dagster:** [http://127.0.0.1:3000](http://127.0.0.1:3000)
-
----
-
 ## Installation Guide
 
 ### 1. Create the Conda Environment
 
 ```bash
+git clone https://github.com/MatiasLoiseau/MLOps-Starter-Kit
+cd MLOps-Starter-Kit
 conda create -n mlops-env python=3.12
 conda activate mlops-env
 pip install mlflow
@@ -126,6 +89,7 @@ GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO mlflow_user;
 ### 1. Activate Conda and Set Environment Variables
 
 ```bash
+# On this repository path
 conda activate mlops-env
 export REPO_FOLDER=${PWD}
 set -o allexport && source .env && set +o allexport
@@ -190,7 +154,6 @@ ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
 
 ```bash
 pip install dbt-postgres
-dbt init db_postgres
 ```
 
 ### 2. Configure DBT
@@ -203,54 +166,34 @@ Follow the prompts during initialization:
 - Database: `mlops`
 - Schema: `target`
 
-### 3. Create and Run Models
-
-1. Add SQL transformations in `db_postgres/models`.
-2. Create a `schema.yml` file.
-3. Configure `dbt_project.yml`.
-4. cd `db_postgres`
-5. Test DBT with `dbt debug`, then execute with `dbt run`.
-
-Go to [this commit](https://github.com/MatiasLoiseau/MLOps-Started-Kit/commit/3b67c813e1c631899660e92711cd78815c2903ef) to configure steps 1 to 3.
-
 ---
 
 ## Dagster
 
 ### 1. Install Dagster
 
-```bash
-conda install dagster
-dagster project scaffold --name recommender_system
-cd recommender_system
-pip install -e ".[dev]"
-mkdir -p dagster_home
-export DAGSTER_HOME="$(pwd)/dagster_home"
-export MLFLOW_TRACKING_URI=http://localhost:8002
-dagster dev
-```
-    
-## Dagster, Airbyte and DBT integration
+(09/02/2024) I had some compatibility problems between packages. I leave the packages they use for this virtual python environment in the source directory. and. Some installed them with [conda](source/conda_packages.txt) and others with [pip](source/pip_requirements.txt). 
 
 ```bash
 conda create -n mlops-dagster python=3.9
-pip install dagster dagster-airbyte dbt-postgres dagster-mlflow dagster-dbt tensorflow # do not use conda install
+pip install dagster dagster-airbyte dbt-postgres dagster-mlflow dagster-dbt tensorflow # do not use conda
 cd recommender_system
 pip install -e ".[dev]"
 export DAGSTER_HOME="$(pwd)/dagster_home"
 export MLFLOW_TRACKING_URI=http://localhost:8002
 dagster dev
 ```
-
 ---
 
-## Postgres complete commands list
+## Optional Tools
 
-### Prerequisites
+### Postgres complete commands list
+
+#### Prerequisites
 - Docker installed on your system.
 - Environment variables setted
 
-### (optional) Delete previous postgres
+#### (optional) Delete previous postgres
 
 If you are reinstalling postgres, make sure to erase the previous data:
 
@@ -260,7 +203,7 @@ docker rm mlops-postgres
 rm -rf $postgres_data_folder
 ```
 
-### Commands
+#### Commands
 ```bash
 docker pull postgres
 docker run -d \
@@ -282,9 +225,12 @@ GRANT ALL ON SCHEMA public TO "yourmail@gmail.com";
 ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
 ```
 
----
+### Default Links
 
-## Optional Tools
+- **Airbyte:** [http://localhost:8000](http://localhost:8000)
+- **MLFlow:** [http://localhost:8002](http://localhost:8002)
+- **Dagster:** [http://localhost:3000](http://localhost:3000)
+
 
 ### DBeaver Installation Linux (Optional)
 

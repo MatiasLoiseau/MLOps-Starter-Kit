@@ -8,6 +8,7 @@ from recommender_system.assets import recommender_assets
 from recommender_system.configs import job_training_config, job_training_config_20
 from recommender_system.assets.core.airbyte import all_airbyte_assets
 from recommender_system.assets.core.dbt import dbt_models, dbt_resource
+
 all_assets = [
     *all_airbyte_assets,
     dbt_models,

@@ -1,73 +1,22 @@
-import os
-from pathlib import Path
 import dagster as dg
-from dagster_dbt import dbt_assets, DbtCliResource, DbtProject
-from dagster import Definitions, define_asset_job, AssetSelection, with_resources, EnvVar
+from dagster import (
+    Definitions,
+    define_asset_job,
+    AssetSelection,
+)
 from recommender_system.assets import recommender_assets
 from recommender_system.configs import job_training_config, job_training_config_20
-from dagster_airbyte import AirbyteResource, build_airbyte_assets
-
-# Define the Airbyte instance   
-airbyte_instance = AirbyteResource(
-    host="localhost",
-    port="8000",
-    username=EnvVar("AIRBYTE_USER"),
-    password=EnvVar("AIRBYTE_PASSWORD"),
-)
-
-airbyte_assets_connection_movies = with_resources(
-    build_airbyte_assets(
-        connection_id="e50425cb-eaf9-4af1-90b1-753016549a64",
-        destination_tables=["movies"],
-        destination_database="mlops",
-        destination_schema="source",
-        asset_key_prefix=["airbyte"],
-    ),
-    {"airbyte": airbyte_instance},
-)
-
-airbyte_assets_connection_scores = with_resources(
-    build_airbyte_assets(
-        connection_id="9de59fbe-9e59-45ad-8798-289a68bddc4a",
-        destination_tables=["scores"],
-        destination_database="mlops",
-        destination_schema="source",
-        asset_key_prefix=["airbyte"],
-    ),
-    {"airbyte": airbyte_instance},
-)
-
-airbyte_assets_connection_users = with_resources(
-    build_airbyte_assets(
-        connection_id="ff79d07f-8dee-43ba-a12e-67240320231d",
-        destination_tables=["users"],
-        destination_database="mlops",
-        destination_schema="source",
-        asset_key_prefix=["airbyte"],
-    ),
-    {"airbyte": airbyte_instance},
-)
-
-all_airbyte_assets = [
-    *airbyte_assets_connection_movies,
-    *airbyte_assets_connection_scores,
-    *airbyte_assets_connection_users,
+from recommender_system.assets.core.airbyte import all_airbyte_assets
+from recommender_system.assets.core.dbt import dbt_models, dbt_resource
+all_assets = [
+    *all_airbyte_assets,
+    dbt_models,
+    *recommender_assets,
 ]
-
-DBT_PROJECT_DIR = Path(__file__).resolve().parent.parent / "db_postgres"
-dbt_resource = DbtCliResource(project_dir=DBT_PROJECT_DIR)
-dbt_project = DbtProject(project_dir=DBT_PROJECT_DIR)
-dbt_project.prepare_if_dev()
-
-@dbt_assets(manifest=DBT_PROJECT_DIR / "target/manifest.json")
-def dbt_models(context: dg.AssetExecutionContext, dbt: DbtCliResource):
-    yield from dbt.cli(["build"], context=context).stream()
-
-all_assets = [*all_airbyte_assets, dbt_models, *recommender_assets] 
 
 only_training_job = define_asset_job(
     "only_training",
-    selection=AssetSelection.groups('recommender'),
+    selection=AssetSelection.groups("recommender"),
     config=job_training_config
 )
 
@@ -82,7 +31,7 @@ dbt_job = define_asset_job(
 )
 
 defs = Definitions(
-    assets=all_assets,  
+    assets=all_assets,
     jobs=[
         only_training_job,
         airbyte_sync_job,

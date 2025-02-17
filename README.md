@@ -4,7 +4,7 @@ This repository contains a practical project developed as part of the MLOps cert
 
 ---
 
-## Installation Guide
+## Environment Installation Guide
 
 ### 1. Create the Conda Environment
 
@@ -27,6 +27,8 @@ set -o allexport && source .env && set +o allexport
 echo $postgres_data_folder
 ```
 ---
+
+Remember change the `.env` file with your credentials.
 
 ## Setting Up PostgreSQL
 
@@ -61,8 +63,6 @@ Access PostgreSQL inside the container:
 
 ```bash
 psql -U postgres
-postgres=# \q
-exit
 ```
 
 ### 4. Install PostgreSQL Client (Optional)
@@ -154,6 +154,8 @@ ALTER DATABASE mlops OWNER TO "yourmail@gmail.com";
 
 ```bash
 pip install dbt-postgres
+dbt init test # this will create a folder and configure your profile ~/.dbt/profiles.yml
+# after this initialization, delete the test folder. you are going to use the db_postgres folder inside recommender_system
 ```
 
 ### 2. Configure DBT
@@ -165,6 +167,14 @@ Follow the prompts during initialization:
 - User: `yourmail@gmail.com`
 - Database: `mlops`
 - Schema: `target`
+
+### 3. Compile DBT
+
+```bash
+cd recommender_system
+dbt compile
+dbt debug # check if everything is ok
+```
 
 ---
 
